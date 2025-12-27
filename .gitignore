@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+backend/target/
+frontend/dist/
+
+# Python / AI
+__pycache__/
+*.py[cod]
+*.whl
+*.pth
+# !ai_engine/pth/unet_mamba_best_psnr.pth
+# (You might want to ignore large model files if they are >100MB, unless using LFS)
+
+# Environment
+.env
+env/
+venv/
+.idea/
+.vscode/
+*.log
+temp/
