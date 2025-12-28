@@ -7,6 +7,10 @@
           <component :is="Component" />
         </transition>
       </router-view>
+      
+      <div class="main-footer">
+          Powered by DerainSys &copy; 2025 | 合肥工业大学梁禹设计
+      </div>
     </div>
   </div>
 </template>
@@ -24,12 +28,18 @@ body {
 .layout-container {
   display: flex;
   min-height: 100vh;
-  /* Global Background */
-  background: radial-gradient(at 0% 0%, #2b3595 0px, transparent 50%),
-              radial-gradient(at 98% 1%, #7928ca 0px, transparent 50%),
-              radial-gradient(at 4% 97%, #ff0f7b 0px, transparent 50%),
-              #1a1a2e;
+  /* Dynamic Background */
+  background: linear-gradient(-45deg, #1a1a2e, #2b3595, #7928ca, #ff0f7b);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
 }
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .main-content {
   flex: 1;
   padding: 20px;
@@ -56,5 +66,13 @@ body {
 #app {
   font-family: 'Inter', Helvetica, Arial, sans-serif;
   color: #fff;
+}
+
+.main-footer {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  margin-top: auto;
 }
 </style>

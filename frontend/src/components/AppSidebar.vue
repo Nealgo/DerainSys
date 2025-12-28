@@ -6,7 +6,7 @@
     <ul class="nav-links">
       <li>
         <router-link to="/" active-class="active">
-          <i class="el-icon-magic-stick"></i> AI 去雨
+          <i class="el-icon-magic-stick"></i> 智能去雨
         </router-link>
       </li>
       <li>
@@ -16,7 +16,7 @@
       </li>
       <li>
         <router-link to="/crop" active-class="active">
-          <i class="el-icon-crop"></i> 智能裁剪
+          <i class="el-icon-crop"></i> 图片裁剪
         </router-link>
       </li>
       <li>

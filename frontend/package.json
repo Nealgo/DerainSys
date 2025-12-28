@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@vue/compiler-sfc": "^3.5.17",
     "asynckit": "^0.4.0",
     "axios": "^1.10.0",
@@ -32,6 +33,7 @@
     "gopd": "^1.2.0",
     "has-symbols": "^1.1.0",
     "vue": "^3.5.17",
+    "vue-cropper": "^1.1.4",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {

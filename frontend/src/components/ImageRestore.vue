@@ -1,8 +1,10 @@
 <template>
-  <div class="app-container">
-    <div class="glass-card">
-      <h1 class="title">AI Image Deraining</h1>
-      <p class="subtitle">智能去雨 · 细节还原 · 极致体验</p>
+  <div class="page-container">
+    <div class="glass-card main-card">
+      <h1 class="page-title"><el-icon style="vertical-align: middle; margin-right: 8px"><MagicStick /></el-icon> AI Image Deraining</h1>
+      <p class="section-subtitle">智能去雨 · 细节还原 · 极致体验</p>
+
+
 
       <!-- 上传区域 -->
       <div v-if="!originalUrl" class="upload-area">
@@ -15,7 +17,7 @@
           :on-change="handleFileChange"
         >
           <div class="upload-content">
-            <i class="el-icon-upload upload-icon"></i>
+            <el-icon class="upload-icon"><UploadFilled /></el-icon>
             <div class="upload-text">点击或拖拽上传图片</div>
             <div class="upload-hint">支持 JPG/PNG 等格式</div>
           </div>
@@ -51,11 +53,16 @@
 
         <!-- 正常模式按钮 -->
         <div v-else class="action-buttons">
-            <el-button v-if="!restoredUrl && !loading" type="info" plain icon="el-icon-edit" @click="startEdit">编辑图片</el-button>
+            <el-button v-if="!restoredUrl && !loading" type="info" plain @click="startEdit">
+                <el-icon style="margin-right: 6px"><Edit /></el-icon> 编辑图片
+            </el-button>
             <el-button v-if="!restoredUrl" type="primary" :loading="loading" @click="restoreImage">
+              <el-icon v-if="!loading" style="margin-right: 6px"><MagicStick /></el-icon>
               {{ loading ? '正在去雨...' : '开始恢复' }}
             </el-button>
-            <el-button v-if="!loading && !restoredUrl" type="danger" plain size="small" @click="resetAll" style="margin-left:auto">重置</el-button>
+            <el-button v-if="!loading && !restoredUrl" type="danger" plain size="small" @click="resetAll" style="margin-left:auto">
+                <el-icon><Refresh /></el-icon>
+            </el-button>
         </div>
       </div>
 
@@ -68,21 +75,21 @@
       <!-- 结果展示 -->
       <div v-if="restoredUrl" class="result-area">
         <div class="divider">
-            <span>恢复结果</span>
+            <span><el-icon style="vertical-align: middle; margin-right: 4px"><Picture /></el-icon> 恢复结果</span>
         </div>
         <div class="image-wrapper result-wrapper">
           <img :src="restoredUrl" alt="Restored" />
         </div>
         <div class="action-buttons">
-             <el-button type="primary" class="download-btn" @click="downloadRestored">下载高清原图</el-button>
-             <el-button type="text" @click="resetAll">处理下一张</el-button>
+             <el-button type="primary" class="download-btn" @click="downloadRestored">
+                <el-icon style="margin-right: 8px"><Download /></el-icon> 下载高清原图
+             </el-button>
+             <el-button type="text" @click="resetAll">
+                <el-icon style="margin-right: 4px"><RefreshLeft /></el-icon> 处理下一张
+             </el-button>
         </div>
       </div>
       
-    </div>
-    
-    <div class="footer">
-        Powered by DerainSys &copy; 2025 | 合肥工业大学梁禹设计
     </div>
   </div>
 </template>
@@ -91,6 +98,7 @@
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { UploadFilled, Edit, MagicStick, Refresh, Picture, Download, RefreshLeft } from '@element-plus/icons-vue'
 
 // --- State ---
 const file = ref(null)            // 原始文件对象
@@ -281,101 +289,96 @@ function resetAll() {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
-.app-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
+.page-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    width: 100%;
+    min-height: 80vh;
+    box-sizing: border-box;
 }
 
 /* 磨砂玻璃卡片 */
-.glass-card {
-  width: 100%;
-  max-width: 500px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.3s ease;
-  animation: cardEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  opacity: 0;
-  transform: translateY(40px);
+.main-card {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.6s ease-out;
 }
 
-@keyframes cardEntry {
-  to {
-      opacity: 1;
-      transform: translateY(0);
-  }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px 0 rgba(0,0,0,0.5);
-}
-
-.title {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(to right, #6EE7B7, #3B82F6, #9333EA);
-    -webkit-background-clip: text;
-    color: transparent;
+.page-title {
     text-align: center;
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
 }
 
-.subtitle {
-    margin: 8px 0 32px 0;
-    font-size: 0.9rem;
+.section-subtitle {
+    margin: 8px 0 40px 0;
+    font-size: 0.95rem;
     color: rgba(255,255,255,0.6);
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
 /* 上传区样式 */
 .upload-area {
+    display: flex;
+    justify-content: center;
+    padding: 60px 0;
     width: 100%;
 }
 .upload-demo :deep(.el-upload-dragger) {
-    background: rgba(255,255,255,0.03);
-    border: 2px dashed rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 16px;
-    width: 100%;
-    height: 200px;
+    height: 240px;
+    width: 400px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    transition: all 0.3s;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
-.upload-demo :deep(.el-upload-dragger):hover {
-    border-color: #3B82F6;
-    background: rgba(59, 130, 246, 0.1);
+.upload-demo :deep(.el-upload-dragger:hover) {
+    border-color: #a5b4fc;
+    background: rgba(165, 180, 252, 0.1);
+    transform: translateY(-4px);
 }
 .upload-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
+    color: #e0e7ff;
 }
 .upload-icon {
-    font-size: 48px;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 12px;
+    font-size: 56px;
+    margin-bottom: 16px;
+    color: #818cf8;
 }
 .upload-text {
-    font-size: 1rem;
-    color: #eee;
+    font-size: 18px;
+    font-weight: 500;
 }
 .upload-hint {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 6px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
 }
 
 /* 预览区 */
@@ -479,11 +482,7 @@ function resetAll() {
     letter-spacing: 1px;
 }
 
-.footer {
-    margin-top: 40px;
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.3);
-}
+
 
 /* 动画定义 */
 @keyframes pulse {
