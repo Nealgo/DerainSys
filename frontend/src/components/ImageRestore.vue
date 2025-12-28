@@ -62,7 +62,7 @@
       <!-- 进度条 -->
       <div v-if="loading" class="progress-area">
         <el-progress :percentage="progress" :status="progress === 100 ? 'success' : ''" :stroke-width="12" striped striped-flow></el-progress>
-        <p class="loading-text">正在运用 Mamba 模型进行图像降噪...</p>
+        <p class="loading-text">正在运用 AI 模型进行图像降噪...</p>
       </div>
 
       <!-- 结果展示 -->
@@ -282,19 +282,11 @@ function resetAll() {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
 .app-container {
-  min-height: 100vh;
   width: 100%;
-  /* 极光深色背景 */
-  background: radial-gradient(at 0% 0%, #2b3595 0px, transparent 50%),
-              radial-gradient(at 98% 1%, #7928ca 0px, transparent 50%),
-              radial-gradient(at 4% 97%, #ff0f7b 0px, transparent 50%),
-              #1a1a2e;
-  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
   color: #fff;
 }
 
@@ -313,6 +305,16 @@ function resetAll() {
   flex-direction: column;
   align-items: center;
   transition: transform 0.3s ease;
+  animation: cardEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+@keyframes cardEntry {
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
 .glass-card:hover {

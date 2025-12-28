@@ -1,20 +1,20 @@
 # Image Deraining System
 
-一个基于 **Mamba (State Space Model)** 和 **UNet** 架构的深度学习图像去雨系统，包含完整的 Vue 3 前端界面和 Spring Boot 后端服务。
+一个基于 **Attention Enhanced UNet** 架构的深度学习图像去雨系统，包含完整的 Vue 3 前端界面和 Spring Boot 后端服务。
 
 ## 📂 项目结构 (Project Structure)
 
 经过优化，本项目分为三个主要模块：
 
 *   **`ai_engine/` (AI 核心)**
-    *   包含所有深度学习相关代码 (`mamba_model.py`, `train.py`, `test.py`)。
+    *   包含深度学习相关代码 (`Derain_model.py`, `train.py`, `test.py`)。
     *   存放数据集 (`dataset/`) 和模型权重 (`*.pth`)。
-    *   核心算法：结合 Haar 小波变换和 Vision Mamba 模块的 UNet 架构。
+    *   核心算法：**Attention Enhanced UNet** (集成 CBAM 注意力机制与残差块)。
 
 *   **`backend/` (后端服务)**
-    *   以前的 `qianhouduan` 目录。
     *   基于 **Java Spring Boot**。
     *   负责提供 API 接口，并调用 Python 脚本 (`your_model_script.py`) 执行推理任务。
+    *   **优化特性**：实现了 "Safe Margin" (安全边距) 填充策略，在推理前自动填充 16px 边缘并在推理后裁剪，完美消除模型边界伪影，保持原图分辨率。
 
 *   **`frontend/` (前端界面)**
     *   基于 **Vue.js 3** + **Element Plus**。
@@ -27,14 +27,12 @@
 为了运行整个系统，您需要配置以下环境：
 
 ### AI 引擎 (Python)
-*   **Python**: 3.8
+*   **Python**: 3.8+
 *   **CUDA**: 11.8 (推荐)
-*   **PyTorch**: 2.0.0
+*   **PyTorch**: 2.0.0+
 *   **核心依赖**:
-    *   `mamba_ssm`
-    *   `causal_conv1d`
     *   `torchvision`
-    *   `Pillow`, `tqdm` 等
+    *   `Pillow`, `tqdm` (无需 mamba_ssm)
 
 ### 后端 (Java)
 *   **JDK**: 1.8 或更高版本

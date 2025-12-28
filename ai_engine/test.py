@@ -3,8 +3,8 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
-# Assuming your new UNet with Mamba is in unet_mamba_model.py
-from mamba_model import UNet # Import the new UNet model
+# UNet model definition
+from mamba_model import UNet # Import the UNet model
 
 # Import PSNR and SSIM calculation functions.
 # Assuming 'utils.py' is in the same directory and contains these functions.
@@ -77,7 +77,7 @@ if not os.path.exists(TEST_DATASET_ROOT_DIR):
 test_dataset = RainDataset(TEST_DATASET_ROOT_DIR)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False) # Batch size is 1 for testing
 
-# Initialize the new UNet model with Mamba
+# Initialize the UNet model
 # Ensure in_channels and out_channels match your trained model
 model = UNet(in_channels=3, out_channels=3).to(device) 
 
