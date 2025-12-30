@@ -4,14 +4,14 @@ from PIL import Image
 from torchvision import transforms
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ai_engine'))
-from Derain_model import UNet
+from Derain_model import WDNet
 
 def restore(input_path, output_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = UNet(in_channels=3, out_channels=3).to(device)
-    model_path = os.path.join(os.path.dirname(__file__), '../ai_engine/pth/Derain_model.pth')
+    model = WDNet(in_channels=3, out_channels=3).to(device)
+    model_path = os.path.join(os.path.dirname(__file__), '../ai_engine/pth/best_model_learnable.pth')
     
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device), strict=False)
     model.eval()
 
     img = Image.open(input_path).convert('RGB')

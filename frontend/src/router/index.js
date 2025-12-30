@@ -21,8 +21,8 @@ const routes = [
     component: ImageCrop
   },
   {
-    path: '/color',
-    name: 'Color',
+    path: '/adjust',
+    name: 'Adjust',
     component: ImageAdjust
   }
 ]

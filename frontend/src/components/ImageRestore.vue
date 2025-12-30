@@ -1,92 +1,121 @@
 <template>
-  <div class="page-container">
-    <div class="glass-card main-card">
-      <h1 class="page-title"><el-icon style="vertical-align: middle; margin-right: 8px"><MagicStick /></el-icon> AI Image Deraining</h1>
-      <p class="section-subtitle">智能去雨 · 细节还原 · 极致体验</p>
-
-
+  <div class="flex justify-center p-8 w-full min-h-[85vh] box-border">
+    <div class="w-full max-w-6xl p-10 bg-white/70 backdrop-blur-2xl border border-white/60 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col items-center animate-[fadeIn_0.6s_ease-out] transition-all duration-300 hover:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.15)]">
+      
+      <!-- Header -->
+      <h1 class="text-center mb-6 text-4xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent tracking-tight leading-tight drop-shadow-sm">
+        <el-icon class="align-middle mr-3 text-indigo-600 animate-pulse"><MagicStick /></el-icon> AI Image Deraining
+      </h1>
+      <p class="mb-12 text-slate-500 tracking-[0.2em] text-sm font-semibold uppercase opacity-80">智能去雨 · 细节还原 · 极致体验</p>
 
       <!-- 上传区域 -->
-      <div v-if="!originalUrl" class="upload-area">
+      <div v-if="!originalUrl" class="w-full flex justify-center py-10">
         <el-upload
-          class="upload-demo"
+          class="upload-demo group"
           drag
           action=""
           :auto-upload="false"
           :show-file-list="false"
           :on-change="handleFileChange"
         >
-          <div class="upload-content">
-            <el-icon class="upload-icon"><UploadFilled /></el-icon>
-            <div class="upload-text">点击或拖拽上传图片</div>
-            <div class="upload-hint">支持 JPG/PNG 等格式</div>
+          <div class="relative flex flex-col items-center justify-center h-72 w-[32rem] border-2 border-dashed border-slate-300 rounded-[2rem] bg-slate-50/50 transition-all duration-500 group-hover:border-blue-500 group-hover:bg-blue-50/30 group-hover:scale-[1.02] group-hover:shadow-2xl overflow-hidden">
+             <!-- Animated background effect on hover -->
+             <div class="absolute inset-0 bg-gradient-to-tr from-blue-100/0 via-blue-100/30 to-purple-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            
+            <el-icon class="text-7xl text-slate-300 mb-6 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-110 group-hover:-rotate-12"><UploadFilled /></el-icon>
+            <div class="text-xl font-bold text-slate-600 relative z-10 transition-colors group-hover:text-blue-600">点击或拖拽上传图片</div>
+            <div class="text-sm text-slate-400 mt-2 relative z-10">支持 JPG/PNG 高清原图</div>
           </div>
         </el-upload>
       </div>
 
-      <!-- 编辑区/预览区 -->
-      <div v-else class="preview-area">
-        <div class="image-wrapper">
-            <img ref="previewImg" :src="currentDisplayUrl" :style="filterStyle" alt="Preview" />
+      <!-- 结果对比展示 (Side-by-Side) -->
+      <div v-else-if="restoredUrl" class="w-full flex flex-col items-center animate-[scaleIn_0.5s_ease-out]">
+         <div class="flex flex-wrap gap-10 w-full justify-center">
+            <!-- Original -->
+            <div class="flex-1 min-w-[320px] flex flex-col items-center group">
+               <div class="relative w-full rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-100 transition-transform duration-500 group-hover:scale-[1.01] group-hover:shadow-2xl">
+                  <div class="absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-white bg-slate-900/40 backdrop-blur-md border border-white/20 z-10 shadow-sm">BEFORE</div>
+                  <img :src="currentDisplayUrl" alt="Original" class="w-full h-auto block aspect-[4/3] object-contain bg-[url('https://gin-vue-admin.com/assets/images/tile.png')] bg-[length:20px_20px]" />
+               </div>
+            </div>
+            
+            <!-- Restored -->
+            <div class="flex-1 min-w-[320px] flex flex-col items-center group">
+               <div class="relative w-full rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(79,70,229,0.15)] border-4 border-white ring-4 ring-indigo-50 bg-slate-100 transition-transform duration-500 group-hover:scale-[1.01] group-hover:shadow-[0_0_60px_rgba(79,70,229,0.3)]">
+                  <div class="absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-white bg-gradient-to-r from-emerald-500/80 to-green-500/80 backdrop-blur-md border border-white/20 z-10 shadow-sm">AFTER</div>
+                  <img :src="restoredUrl" alt="Restored" class="w-full h-auto block aspect-[4/3] object-contain bg-[url('https://gin-vue-admin.com/assets/images/tile.png')] bg-[length:20px_20px]" />
+               </div>
+            </div>
+         </div>
+
+         <div class="flex justify-center gap-6 mt-12 w-full">
+             <button class="px-8 py-3.5 rounded-full bg-slate-100 text-slate-600 font-bold tracking-wide border border-slate-200 shadow-sm hover:bg-white hover:text-red-500 hover:border-red-200 hover:shadow-md transition-all duration-300 flex items-center group" @click="resetAll">
+                <el-icon class="mr-2 text-lg transition-transform group-hover:-rotate-180"><RefreshLeft /></el-icon> 处理下一张
+             </button>
+             <button class="px-10 py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold tracking-wide shadow-lg hover:shadow-blue-500/40 hover:-translate-y-1 hover:brightness-110 active:scale-95 transition-all duration-300 flex items-center" @click="downloadRestored">
+                <el-icon class="mr-2 text-xl font-bold"><Download /></el-icon> 下载高清结果
+             </button>
+         </div>
+      </div>
+
+      <!-- 编辑区/预览区 (Pre-Processing) -->
+      <div v-else class="w-full flex flex-col items-center overflow-hidden">
+        <div class="w-full rounded-2xl overflow-hidden bg-slate-100 mb-6 flex justify-center items-center border border-slate-200/60 shadow-inner p-2 max-w-3xl" style="min-height: 300px; max-height: 50vh;">
+            <img ref="previewImg" :src="currentDisplayUrl" :style="filterStyle" alt="Preview" class="max-w-full max-h-[45vh] object-contain rounded-xl" style="image-rendering: auto;" />
         </div>
 
         <!-- 编辑模式控制器 -->
-        <div v-if="isEditing" class="edit-controls">
-           <div class="control-group">
-              <span>亮度 ({{ editState.brightness }}%)</span>
-              <el-slider v-model="editState.brightness" :min="50" :max="150" :format-tooltip="val => val + '%'"></el-slider>
-           </div>
-           <div class="control-group">
-              <span>对比度 ({{ editState.contrast }}%)</span>
-              <el-slider v-model="editState.contrast" :min="50" :max="150" :format-tooltip="val => val + '%'"></el-slider>
-           </div>
-           <div class="control-buttons">
-              <el-button round size="small" @click="rotateLeft">↺ 向左旋转</el-button>
-              <el-button round size="small" @click="rotateRight">↻ 向右旋转</el-button>
+        <div v-if="isEditing" class="w-full max-w-2xl bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] mb-8 shadow-lg border border-white/50 animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
+           <div class="mb-6 space-y-6">
+               <div>
+                  <div class="flex justify-between mb-2">
+                      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Brightness</span>
+                      <span class="text-xs font-mono text-blue-600">{{ editState.brightness }}%</span>
+                  </div>
+                  <el-slider v-model="editState.brightness" :min="50" :max="150" :format-tooltip="val => val + '%'"></el-slider>
+               </div>
+               <div>
+                  <div class="flex justify-between mb-2">
+                       <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Contrast</span>
+                       <span class="text-xs font-mono text-blue-600">{{ editState.contrast }}%</span>
+                  </div>
+                  <el-slider v-model="editState.contrast" :min="50" :max="150" :format-tooltip="val => val + '%'"></el-slider>
+               </div>
            </div>
            
-           <div class="action-buttons">
-               <el-button type="info" plain @click="cancelEdit">取消</el-button>
-               <el-button type="primary" @click="confirmEdit">确认应用</el-button>
+           <div class="flex justify-center gap-6 my-6 pb-6 border-b border-slate-100">
+              <button class="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-md hover:border-blue-100 transition-all active:scale-90 flex items-center justify-center text-xl" @click="rotateLeft" title="Rotate Left">↺</button>
+              <button class="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-md hover:border-blue-100 transition-all active:scale-90 flex items-center justify-center text-xl" @click="rotateRight" title="Rotate Right">↻</button>
+           </div>
+           
+           <div class="flex justify-center gap-4 w-full">
+               <button class="px-8 py-2.5 rounded-full text-slate-500 font-semibold hover:bg-slate-100 transition-colors" @click="cancelEdit">Cancel</button>
+               <button class="px-8 py-2.5 rounded-full bg-slate-900 text-white font-semibold hover:bg-slate-700 hover:scale-105 transition-all shadow-lg" @click="confirmEdit">Apply Changes</button>
            </div>
         </div>
 
-        <!-- 正常模式按钮 -->
-        <div v-else class="action-buttons">
-            <el-button v-if="!restoredUrl && !loading" type="info" plain @click="startEdit">
-                <el-icon style="margin-right: 6px"><Edit /></el-icon> 编辑图片
-            </el-button>
-            <el-button v-if="!restoredUrl" type="primary" :loading="loading" @click="restoreImage">
-              <el-icon v-if="!loading" style="margin-right: 6px"><MagicStick /></el-icon>
-              {{ loading ? '正在去雨...' : '开始恢复' }}
-            </el-button>
-            <el-button v-if="!loading && !restoredUrl" type="danger" plain size="small" @click="resetAll" style="margin-left:auto">
+        <!-- 正常模式按钮 (fixed min-height to prevent layout shift) -->
+        <div v-if="!isEditing" class="min-h-[64px] flex items-center justify-center gap-6 w-full">
+             <button v-if="!loading" class="px-6 py-3 rounded-full bg-white text-slate-600 border border-slate-200 font-bold shadow-sm hover:shadow-md hover:border-blue-300 hover:text-blue-600 transition-all duration-300 flex items-center" @click="startEdit">
+                <el-icon class="mr-2"><Edit /></el-icon> 编辑图片
+            </button>
+            <button class="relative overflow-hidden px-12 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center disabled:opacity-70 disabled:cursor-not-allowed group" :disabled="loading" @click="restoreImage">
+              <span v-if="!loading" class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+              <el-icon v-if="!loading" class="mr-2 text-lg"><MagicStick /></el-icon>
+              {{ loading ? 'Generating...' : '开始恢复 (Start Restore)' }}
+            </button>
+            <button v-if="!loading" class="w-12 h-12 rounded-full bg-red-50 text-red-400 border border-red-100 hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-500/30 transition-all active:scale-90 flex items-center justify-center" @click="resetAll">
                 <el-icon><Refresh /></el-icon>
-            </el-button>
+            </button>
         </div>
-      </div>
 
-      <!-- 进度条 -->
-      <div v-if="loading" class="progress-area">
-        <el-progress :percentage="progress" :status="progress === 100 ? 'success' : ''" :stroke-width="12" striped striped-flow></el-progress>
-        <p class="loading-text">正在运用 AI 模型进行图像降噪...</p>
-      </div>
-
-      <!-- 结果展示 -->
-      <div v-if="restoredUrl" class="result-area">
-        <div class="divider">
-            <span><el-icon style="vertical-align: middle; margin-right: 4px"><Picture /></el-icon> 恢复结果</span>
-        </div>
-        <div class="image-wrapper result-wrapper">
-          <img :src="restoredUrl" alt="Restored" />
-        </div>
-        <div class="action-buttons">
-             <el-button type="primary" class="download-btn" @click="downloadRestored">
-                <el-icon style="margin-right: 8px"><Download /></el-icon> 下载高清原图
-             </el-button>
-             <el-button type="text" @click="resetAll">
-                <el-icon style="margin-right: 4px"><RefreshLeft /></el-icon> 处理下一张
-             </el-button>
+        <!-- 进度条 -->
+        <div v-if="loading" class="w-full max-w-lg mt-10 text-center">
+          <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+             <div class="h-full bg-gradient-to-r from-blue-400 to-indigo-600 animate-[progress_2s_ease-in-out_infinite]" :style="{ width: progress + '%' }"></div>
+          </div>
+          <p class="mt-4 text-sm font-semibold text-slate-400 animate-pulse tracking-wide">AI Engine Processing... Please Wait</p>
         </div>
       </div>
       
@@ -98,7 +127,7 @@
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { UploadFilled, Edit, MagicStick, Refresh, Picture, Download, RefreshLeft } from '@element-plus/icons-vue'
+import { UploadFilled, Edit, MagicStick, Refresh, Download, RefreshLeft } from '@element-plus/icons-vue'
 
 // --- State ---
 const file = ref(null)            // 原始文件对象
@@ -288,210 +317,15 @@ function resetAll() {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-
-.page-container {
-    display: flex;
-    justify-content: center;
-    padding: 40px;
-    width: 100%;
-    min-height: 80vh;
-    box-sizing: border-box;
+/* Override el-upload default styling */
+:deep(.el-upload-dragger) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  width: auto !important;
+  height: auto !important;
 }
-
-/* 磨砂玻璃卡片 */
-.main-card {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.page-title {
-    text-align: center;
-    margin-bottom: 24px;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-}
-
-.section-subtitle {
-    margin: 8px 0 40px 0;
-    font-size: 0.95rem;
-    color: rgba(255,255,255,0.6);
-    letter-spacing: 2px;
-}
-
-/* 上传区样式 */
-.upload-area {
-    display: flex;
-    justify-content: center;
-    padding: 60px 0;
-    width: 100%;
-}
-.upload-demo :deep(.el-upload-dragger) {
-    background: rgba(255, 255, 255, 0.03);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    height: 240px;
-    width: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-.upload-demo :deep(.el-upload-dragger:hover) {
-    border-color: #a5b4fc;
-    background: rgba(165, 180, 252, 0.1);
-    transform: translateY(-4px);
-}
-.upload-content {
-    text-align: center;
-    color: #e0e7ff;
-}
-.upload-icon {
-    font-size: 56px;
-    margin-bottom: 16px;
-    color: #818cf8;
-}
-.upload-text {
-    font-size: 18px;
-    font-weight: 500;
-}
-.upload-hint {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 8px;
-}
-
-/* 预览区 */
-.preview-area {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.image-wrapper {
-    width: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(0,0,0,0.2);
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-.image-wrapper img {
-    max-width: 100%;
-    max-height: 400px;
-    display: block;
-}
-
-/* 编辑控件 */
-.edit-controls {
-    width: 100%;
-    background: rgba(0,0,0,0.2);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-.control-group {
-    margin-bottom: 12px;
-}
-.control-group span {
-    font-size: 0.85rem;
-    color: #ccc;
-    display: block;
-    margin-bottom: 4px;
-}
-.control-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 16px 0;
-}
-.action-buttons {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-}
-
-/* 进度条 */
-.progress-area {
-    width: 100%;
-    margin: 20px 0;
-    text-align: center;
-}
-.loading-text {
-    margin-top: 10px;
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.7);
-    animation: pulse 1.5s infinite;
-}
-
-/* 结果区 */
-.result-area {
-    width: 100%;
-    margin-top: 20px;
-    animation: fadeIn 0.5s ease-out;
-}
-.result-wrapper {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-    border-color: rgba(59, 130, 246, 0.4);
-}
-.divider {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-}
-.divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,0.1);
-}
-.divider span {
-    padding: 0 12px;
-    color: #3B82F6;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.download-btn {
-    width: 100%;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-
-
-/* 动画定义 */
-@keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+:deep(.el-upload) {
+  width: 100%;
 }
 </style>

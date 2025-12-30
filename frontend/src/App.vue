@@ -1,15 +1,26 @@
 <template>
-  <div class="layout-container">
-    <AppSidebar />
-    <div class="main-content">
+  <div class="flex h-screen w-full overflow-hidden relative bg-slate-50 font-sans text-slate-800">
+    <!-- Dynamic Background Elements -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-purple-200/40 blur-[120px] animate-[blob_20s_infinite]"></div>
+        <div class="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-200/40 blur-[100px] animate-[blob_25s_infinite_reverse]"></div>
+        <div class="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-indigo-200/40 blur-[140px] animate-[blob_30s_infinite]"></div>
+    </div>
+
+    <!-- Sidebar (High z-index to sit above background) -->
+    <AppSidebar class="z-20 relative" />
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full relative z-10 transition-all duration-300">
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
+        <transition name="fade-slide" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
       
-      <div class="main-footer">
-          Powered by DerainSys &copy; 2025 | 合肥工业大学梁禹设计
+      <!-- Footer Info (Optional, kept subtle) -->
+      <div class="text-center py-4 text-xs text-slate-400 select-none">
+        Powered by DerainSys © 2025 | 合肥工业大学梁禹设计
       </div>
     </div>
   </div>
@@ -20,59 +31,27 @@ import AppSidebar from './components/AppSidebar.vue'
 </script>
 
 <style>
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a2e;
-}
-.layout-container {
-  display: flex;
-  min-height: 100vh;
-  /* Dynamic Background */
-  background: linear-gradient(-45deg, #1a1a2e, #2b3595, #7928ca, #ff0f7b);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
+/* Global Transitions */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-/* Page Transitions: Slide Up + Fade */
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.fade-enter-from {
+.fade-slide-enter-from {
   opacity: 0;
-  transform: translateY(20px) scale(0.98);
+  transform: translateY(15px);
 }
 
-.fade-leave-to {
+.fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(-20px) scale(0.98);
+  transform: scale(0.98);
 }
 
-#app {
-  font-family: 'Inter', Helvetica, Arial, sans-serif;
-  color: #fff;
-}
-
-.main-footer {
-  text-align: center;
-  padding: 20px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 12px;
-  margin-top: auto;
+/* Custom Animation Keyframes */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
 </style>

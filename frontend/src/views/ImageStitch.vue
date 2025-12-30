@@ -1,82 +1,83 @@
 <template>
-  <div class="page-container">
-    <div class="glass-card main-card">
-      <h1 class="page-title"><el-icon style="vertical-align: middle; margin-right: 8px"><Picture /></el-icon> 图片拼接 (Image Stitching)</h1>
+  <div class="flex justify-center p-4 w-full h-[calc(100vh-80px)] box-border">
+    <div class="w-full max-w-6xl p-6 bg-white/70 backdrop-blur-2xl border border-white/60 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col animate-[fadeIn_0.6s_ease-out] transition-all duration-300 hover:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.15)] h-full">
       
-      <div class="stitch-layout">
+      <!-- Header -->
+      <h1 class="text-center mb-6 text-3xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent tracking-tight flex items-center justify-center">
+         <el-icon class="mr-3 text-indigo-600"><Picture /></el-icon> 图片拼接 (Image Stitching)
+      </h1>
+      <p class="text-center mb-4 text-slate-500 tracking-[0.2em] text-sm font-semibold uppercase opacity-80">多图合一 · 竖向横向 · 批量处理</p>
+
+      <div class="grid grid-cols-[280px_1fr] gap-4 w-full flex-1 min-h-0">
         <!-- Left Panel: Upload & List -->
-        <div class="panel upload-panel">
+        <div class="flex flex-col gap-3 p-4 bg-white/50 rounded-2xl border border-white/60 shadow-sm overflow-hidden">
             <el-upload
-                class="upload-demo"
+                class="stitch-upload"
                 action=""
                 multiple
                 :auto-upload="false"
                 :show-file-list="false"
                 :on-change="handleFileChange"
             >
-               <el-button class="action-btn primary-btn" type="primary">
-                   <el-icon style="margin-right: 6px"><Plus /></el-icon> 添加图片
-               </el-button>
+               <button class="w-full py-2.5 text-sm rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center">
+                   <el-icon class="mr-1.5 text-base"><Plus /></el-icon> 添加图片
+               </button>
             </el-upload>
             
-            <div class="image-list" v-if="imageList.length > 0">
-                <div v-for="(img, index) in imageList" :key="img.id" class="image-item">
-                    <div class="thumbnail">
-                        <img :src="img.url" />
+            <div class="flex-1 overflow-y-auto space-y-2 min-h-0" v-if="imageList.length > 0">
+                <div v-for="(img, index) in imageList" :key="img.id" class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100 group hover:border-blue-200 hover:bg-blue-50/50 transition-all">
+                    <div class="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
+                        <img :src="img.url" class="w-full h-full object-cover" />
                     </div>
-                    <div class="item-info">
-                        <span class="filename">{{ img.file.name }}</span>
-                        <span class="filesize">{{ (img.file.size / 1024).toFixed(1) }} KB</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-medium text-slate-600 truncate">{{ img.file.name }}</p>
+                        <p class="text-[10px] text-slate-400">{{ (img.file.size / 1024).toFixed(1) }} KB</p>
                     </div>
-                    <div class="item-actions">
-                        <el-button size="small" circle @click="moveUp(index)" :disabled="index === 0">
-                            <el-icon><Top /></el-icon>
-                        </el-button>
-                        <el-button size="small" circle @click="moveDown(index)" :disabled="index === imageList.length - 1">
-                            <el-icon><Bottom /></el-icon>
-                        </el-button>
-                        <el-button size="small" circle type="danger" plain @click="removeImage(index)">
-                            <el-icon><Delete /></el-icon>
-                        </el-button>
+                    <div class="flex gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
+                        <button class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 hover:bg-blue-100 hover:text-blue-600 transition-colors flex items-center justify-center disabled:opacity-30 text-xs" @click="moveUp(index)" :disabled="index === 0"><el-icon><Top /></el-icon></button>
+                        <button class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 hover:bg-blue-100 hover:text-blue-600 transition-colors flex items-center justify-center disabled:opacity-30 text-xs" @click="moveDown(index)" :disabled="index === imageList.length - 1"><el-icon><Bottom /></el-icon></button>
+                        <button class="w-6 h-6 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center text-xs" @click="removeImage(index)"><el-icon><Delete /></el-icon></button>
                     </div>
                 </div>
             </div>
-            <div v-else class="empty-list">
-                <el-icon class="empty-icon"><Picture /></el-icon>
-                <p>暂无图片，请点击上方按钮添加</p>
+            <div v-else class="flex-1 flex flex-col items-center justify-center text-slate-300 border-2 border-dashed border-slate-200 rounded-xl min-h-[280px]">
+                <el-icon class="text-4xl mb-2"><Picture /></el-icon>
+                <p class="text-xs">暂无图片，请添加</p>
             </div>
         </div>
 
         <!-- Right Panel: Settings & Preview -->
-        <div class="panel preview-panel">
-            <div class="configuration">
-                <span class="label">拼接方向：</span>
-                <el-radio-group v-model="stitchMode" size="large">
-                    <el-radio-button label="vertical">
-                         <el-icon style="vertical-align:middle;margin-right:4px"><Bottom /></el-icon> 竖向拼接
+        <div class="flex flex-col gap-4 p-4 bg-white/50 rounded-2xl border border-white/60 shadow-sm overflow-hidden">
+            <div class="flex items-center justify-center gap-4 flex-shrink-0 py-2 border-b border-slate-100">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">拼接方向</span>
+                <el-radio-group v-model="stitchMode" size="default" class="bg-gradient-to-r from-slate-50 to-slate-100 p-1 rounded-full shadow-inner border border-slate-200/50">
+                    <el-radio-button label="vertical" class="!rounded-full !border-none !shadow-none !text-xs !px-4">
+                         <el-icon class="mr-1"><Bottom /></el-icon> 竖向
                     </el-radio-button>
-                    <el-radio-button label="horizontal">
-                         <el-icon style="vertical-align:middle;margin-right:4px"><Right /></el-icon> 横向拼接
+                    <el-radio-button label="horizontal" class="!rounded-full !border-none !shadow-none !text-xs !px-4">
+                         <el-icon class="mr-1"><Right /></el-icon> 横向
                     </el-radio-button>
                 </el-radio-group>
             </div>
 
-            <div class="preview-stage">
-                 <div class="canvas-wrapper" v-if="previewUrl">
-                     <img :src="previewUrl" class="stitch-result" />
+            <div class="flex-1 bg-slate-100 rounded-xl overflow-auto shadow-inner border border-slate-200/60 flex items-center justify-center min-h-0">
+                 <div class="p-4" v-if="previewUrl">
+                     <img :src="previewUrl" class="max-w-full max-h-[400px] block shadow-lg rounded-lg" />
                  </div>
-                 <div v-else class="placeholder-preview">
-                     <span>点击“开始拼接”生成预览</span>
+                 <div v-else class="text-slate-400 text-xs">
+                     <span>点击"开始拼接"生成预览</span>
                  </div>
             </div>
 
-            <div class="action-footer">
-                <el-button class="action-btn primary-btn" type="primary" :disabled="imageList.length < 2" @click="processStitch">
-                    <el-icon style="margin-right: 8px"><MagicStick /></el-icon> 开始拼接
-                </el-button>
-                <el-button class="action-btn success-btn" type="success" :disabled="!previewUrl" @click="downloadResult">
-                    <el-icon style="margin-right: 8px"><Download /></el-icon> 下载结果
-                </el-button>
+            <div class="flex gap-3 flex-shrink-0">
+                <button class="group relative flex-1 py-3.5 text-sm rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:shadow-xl hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden" :disabled="imageList.length < 2" @click="processStitch">
+                    <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+                    <el-icon class="mr-2 group-hover:animate-pulse"><MagicStick /></el-icon> 开始拼接
+                </button>
+                <button class="group relative flex-1 py-3.5 text-sm rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:shadow-xl hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden" :disabled="!previewUrl" @click="downloadResult">
+                    <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+                    <el-icon class="mr-2 group-hover:animate-bounce"><Download /></el-icon> 下载结果
+                </button>
             </div>
         </div>
       </div>
@@ -93,7 +94,6 @@ import { ElMessage } from 'element-plus'
 const imageList = ref([])
 const stitchMode = ref('vertical') // 'vertical' | 'horizontal'
 const previewUrl = ref('')
-const loading = ref(false)
 
 let stitchedBlob = null
 
@@ -108,7 +108,6 @@ function handleFileChange(file) {
         file: file.raw,
         url: url
     })
-    // Reset preview on change
     previewUrl.value = ''
     stitchedBlob = null
 }
@@ -136,41 +135,31 @@ function moveDown(index) {
 
 async function processStitch() {
     if(imageList.value.length < 2) return
-    loading.value = true
     
     try {
-        // Load all images
-        const loadedDigs = await Promise.all(imageList.value.map(item => loadImage(item.url)))
+        const loadedImgs = await Promise.all(imageList.value.map(item => loadImage(item.url)))
         
-        // Calculate dimensions
         let totalWidth = 0
         let totalHeight = 0
         
         if(stitchMode.value === 'vertical') {
-            // Width = Max Width, Height = Sum Height
-            totalWidth = Math.max(...loadedDigs.map(img => img.width))
-            totalHeight = loadedDigs.reduce((sum, img) => sum + img.height, 0)
+            totalWidth = Math.max(...loadedImgs.map(img => img.width))
+            totalHeight = loadedImgs.reduce((sum, img) => sum + img.height, 0)
         } else {
-            // Width = Sum Width, Height = Max Height
-            totalWidth = loadedDigs.reduce((sum, img) => sum + img.width, 0)
-            totalHeight = Math.max(...loadedDigs.map(img => img.height))
+            totalWidth = loadedImgs.reduce((sum, img) => sum + img.width, 0)
+            totalHeight = Math.max(...loadedImgs.map(img => img.height))
         }
         
         const canvas = document.createElement('canvas')
         canvas.width = totalWidth
         canvas.height = totalHeight
         const ctx = canvas.getContext('2d')
-        
-        // Fill background (optional, maybe white or transparent)
-        // ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,totalWidth, totalHeight);
 
         let currentX = 0
         let currentY = 0
         
-        loadedDigs.forEach(img => {
+        loadedImgs.forEach(img => {
             if(stitchMode.value === 'vertical') {
-                // Draw centered horizontally? Or aligned left? Let's align left for now, or resize to fit?
-                // Simple stitch: align left/top
                 ctx.drawImage(img, 0, currentY)
                 currentY += img.height
             } else {
@@ -182,14 +171,12 @@ async function processStitch() {
         canvas.toBlob(blob => {
             stitchedBlob = blob
             previewUrl.value = URL.createObjectURL(blob)
-            loading.value = false
             ElMessage.success('拼接完成')
         }, 'image/png')
         
     } catch (e) {
         console.error(e)
         ElMessage.error('处理出错')
-        loading.value = false
     }
 }
 
@@ -212,197 +199,10 @@ function downloadResult() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-
-.page-container {
-    display: flex;
-    justify-content: center;
-    padding: 40px;
-    width: 100%;
-    min-height: 80vh;
-    box-sizing: border-box;
+.stitch-upload {
+  width: 100%;
 }
-
-.main-card {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.page-title {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-}
-
-.stitch-layout {
-    display: grid;
-    grid-template-columns: 1fr 2fr; /* 1:2 ratio for list vs preview */
-    gap: 30px;
-    min-height: 500px;
-}
-
-.panel {
-    background: rgba(255,255,255,0.05);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.05);
-    display: flex;
-    flex-direction: column;
-}
-
-/* Left Panel */
-.upload-panel {
-    gap: 16px;
-}
-.image-list {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 500px;
-}
-.image-item {
-    display: flex;
-    align-items: center;
-    background: rgba(0,0,0,0.2);
-    padding: 8px;
-    border-radius: 8px;
-    gap: 10px;
-}
-.thumbnail {
-    width: 48px;
-    height: 48px;
-    border-radius: 4px;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-.thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.item-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.filename {
-    font-size: 13px;
-    color: #e0e7ff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.filesize {
-    font-size: 11px;
-    color: #9ca3af;
-}
-.item-actions {
-    display: flex;
-    gap: 4px;
-}
-
-.empty-list {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255,255,255,0.3);
-    border: 2px dashed rgba(255,255,255,0.1);
-    border-radius: 12px;
-}
-.empty-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
-
-/* Right Panel */
-.preview-panel {
-    gap: 20px;
-}
-.configuration {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.label {
-    color: #e0e7ff;
-    font-weight: 500;
-}
-
-.preview-stage {
-    flex: 1;
-    background: #1a1a1a;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-    min-height: 300px;
-}
-
-.placeholder-preview {
-    color: rgba(255,255,255,0.4);
-    font-size: 14px;
-}
-
-.canvas-wrapper {
-    max-width: 100%;
-    max-height: 500px;
-    overflow: auto;
-    padding: 20px;
-}
-.stitch-result {
-    max-width: 100%;
-    display: block;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-
-.action-footer {
-    display: flex;
-    gap: 16px;
-    justify-content: flex-end;
-}
-
-.action-btn {
-    height: 44px;
-    font-size: 15px;
-    border-radius: 8px;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-}
-.primary-btn {
-    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-    border: none;
-    flex: 1;
-}
-.success-btn {
-    flex: 1;
+.stitch-upload :deep(.el-upload) {
+  width: 100%;
 }
 </style>
